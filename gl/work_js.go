@@ -45,6 +45,10 @@ func Version() string {
 }
 
 func jsBytes(data []byte) js.Value {
+	if data == nil {
+		return js.Null()
+	}
+
 	arr := js.Global().Get("Uint8Array").New(len(data))
 	js.CopyBytesToJS(arr, data)
 
@@ -52,6 +56,10 @@ func jsBytes(data []byte) js.Value {
 }
 
 func jsInts(data []int32) js.Value {
+	if data == nil {
+		return js.Null()
+	}
+
 	arr := js.Global().Get("Int32Array").New(len(data))
 
 	for i, n := range data {
@@ -62,6 +70,10 @@ func jsInts(data []int32) js.Value {
 }
 
 func jsFloats(data []float32) js.Value {
+	if data == nil {
+		return js.Null()
+	}
+
 	arr := js.Global().Get("Float32Array").New(len(data))
 
 	for i, f := range data {
@@ -623,7 +635,7 @@ func (c context) StencilOpSeparate(face, sfail, dpfail, dppass Enum) {
 }
 
 func (c context) TexImage2D(target Enum, level int, internalFormat int, width, height int, format Enum, ty Enum, data []byte) {
-	c.ctx.Call("texImage2D", target, level, internalFormat, width, height, format, ty, jsBytes(data))
+	c.ctx.Call("texImage2D", target, level, internalFormat, width, height, 0, format, ty, jsBytes(data))
 }
 
 func (c context) TexSubImage2D(target Enum, level int, x, y, width, height int, format, ty Enum, data []byte) {
@@ -711,15 +723,15 @@ func (c context) Uniform4iv(dst Uniform, src []int32) {
 }
 
 func (c context) UniformMatrix2fv(dst Uniform, src []float32) {
-	c.ctx.Call("uniformMatrix2fv", dst.Value, jsFloats(src))
+	c.ctx.Call("uniformMatrix2fv", dst.Value, false, jsFloats(src))
 }
 
 func (c context) UniformMatrix3fv(dst Uniform, src []float32) {
-	c.ctx.Call("uniformMatrix3fv", dst.Value, jsFloats(src))
+	c.ctx.Call("uniformMatrix3fv", dst.Value, false, jsFloats(src))
 }
 
 func (c context) UniformMatrix4fv(dst Uniform, src []float32) {
-	c.ctx.Call("uniformMatrix4fv", dst.Value, jsFloats(src))
+	c.ctx.Call("uniformMatrix4fv", dst.Value, false, jsFloats(src))
 }
 
 func (c context) UseProgram(p Program) {
