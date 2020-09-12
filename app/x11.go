@@ -273,11 +273,12 @@ var keyMap = map[C.KeySym]key.Code{
 //export onKeyEvent
 func onKeyEvent(ce *C.XKeyEvent) {
 	e := key.Event{}
+	// TODO: detect repeats
 	if ce._type == C.KeyPress {
 		e.Direction = key.DirPress
-		// TODO: detect repeats
 	} else {
 		e.Direction = key.DirRelease
+		ce._type = C.KeyPress
 	}
 
 	if ce.state&C.ShiftMask != 0 {
