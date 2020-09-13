@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -122,14 +123,10 @@ func installOpenAL(gomobilepath string) error {
 	if buildN {
 		cmake = "cmake"
 	} else {
-		sdkRoot := os.Getenv("ANDROID_HOME")
-		if sdkRoot == "" {
-			return nil
-		}
 		var err error
 		cmake, err = exec.LookPath("cmake")
 		if err != nil {
-			cmakePath := filepath.Join(sdkRoot, "cmake")
+			cmakePath := filepath.Join(os.Getenv("ANDROID_HOME"), "cmake")
 			cmakeDir, err := os.Open(cmakePath)
 			if err != nil {
 				if os.IsNotExist(err) {
@@ -181,8 +178,9 @@ func installOpenAL(gomobilepath string) error {
 		}
 		cmd := exec.Command(cmake,
 			initOpenAL,
-			"-DCMAKE_TOOLCHAIN_FILE="+initOpenAL+"/XCompile-Android.txt",
-			"-DHOST="+t.ClangPrefix())
+			"-DCMAKE_TOOLCHAIN_FILE="+ndkRoot+"/build/cmake/android.toolchain.cmake",
+			"-DANDROID_ABI="+t.abi,
+			"-DANDROID_PLATFORM="+strconv.Itoa(t.minAPI))
 		cmd.Dir = buildDir
 		tcPath := filepath.Join(ndkRoot, "toolchains", "llvm", "prebuilt", archNDK(), "bin")
 		if !buildN {
