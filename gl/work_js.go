@@ -133,6 +133,10 @@ type context3 struct {
 	context
 }
 
+func (e Enum) JSValue() js.Value {
+	return js.ValueOf(int(e))
+}
+
 func (c context) ActiveTexture(texture Enum) {
 	c.ctx.Call("activeTexture", texture)
 }
@@ -330,7 +334,7 @@ func (c context) DrawArrays(mode Enum, first, count int) {
 }
 
 func (c context) DrawElements(mode Enum, count int, ty Enum, offset int) {
-	c.ctx.Call("darwElements", mode, count, ty, offset)
+	c.ctx.Call("drawElements", mode, count, ty, offset)
 }
 
 func (c context) Enable(cap Enum) {
