@@ -178,6 +178,8 @@ func installOpenAL(gomobilepath string) error {
 		}
 		cmd := exec.Command(cmake,
 			initOpenAL,
+			"-DALSOFT_UTILS=OFF",
+			"-DALSOFT_EXAMPLES=OFF",
 			"-DCMAKE_TOOLCHAIN_FILE="+ndkRoot+"/build/cmake/android.toolchain.cmake",
 			"-DANDROID_ABI="+t.abi,
 			"-DANDROID_PLATFORM="+strconv.Itoa(t.minAPI))
