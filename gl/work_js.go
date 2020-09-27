@@ -52,27 +52,15 @@ func Version() string {
 	return "GL_ES_2_0"
 }
 
+var uint8Array = js.Global().Get("Uint8Array")
+
 func jsBytes(data []byte) js.Value {
 	if data == nil {
 		return js.Null()
 	}
 
-	arr := js.Global().Get("Uint8Array").New(len(data))
+	arr := uint8Array.New(len(data))
 	js.CopyBytesToJS(arr, data)
-
-	return arr
-}
-
-func jsInts(data []int32) js.Value {
-	if data == nil {
-		return js.Null()
-	}
-
-	arr := js.Global().Get("Int32Array").New(len(data))
-
-	for i, n := range data {
-		arr.SetIndex(i, n)
-	}
 
 	return arr
 }
@@ -131,25 +119,30 @@ type context struct {
 	canvas js.Value
 	ctx    js.Value
 
-	activeTexture    js.Value
-	bindBuffer       js.Value
-	bindFramebuffer  js.Value
-	bindTexture      js.Value
-	clear            js.Value
-	clearColor       js.Value
-	drawElements     js.Value
-	uniform1f        js.Value
-	uniform1i        js.Value
-	uniform2f        js.Value
-	uniform2i        js.Value
-	uniform3f        js.Value
-	uniform3i        js.Value
-	uniform4f        js.Value
-	uniform4i        js.Value
-	uniformMatrix2fv js.Value
-	uniformMatrix3fv js.Value
-	uniformMatrix4fv js.Value
-	useProgram       js.Value
+	activeTexture            js.Value
+	bindBuffer               js.Value
+	bindFramebuffer          js.Value
+	bindTexture              js.Value
+	bufferData               js.Value
+	clear                    js.Value
+	clearColor               js.Value
+	disableVertexAttribArray js.Value
+	drawElements             js.Value
+	enableVertexAttribArray  js.Value
+	uniform1f                js.Value
+	uniform1i                js.Value
+	uniform2f                js.Value
+	uniform2i                js.Value
+	uniform3f                js.Value
+	uniform3i                js.Value
+	uniform4f                js.Value
+	uniform4i                js.Value
+	uniformMatrix2fv         js.Value
+	uniformMatrix3fv         js.Value
+	uniformMatrix4fv         js.Value
+	useProgram               js.Value
+	vertexAttribPointer      js.Value
+	viewport                 js.Value
 }
 
 var _ CanvasContext = (*context)(nil)
@@ -174,9 +167,12 @@ func (c *context) bind() {
 	c.bindBuffer = c.ctx.Get("bindBuffer").Call("bind", c.ctx)
 	c.bindFramebuffer = c.ctx.Get("bindFramebuffer").Call("bind", c.ctx)
 	c.bindTexture = c.ctx.Get("bindTexture").Call("bind", c.ctx)
+	c.bufferData = c.ctx.Get("bufferData").Call("bind", c.ctx)
 	c.clear = c.ctx.Get("clear").Call("bind", c.ctx)
 	c.clearColor = c.ctx.Get("clearColor").Call("bind", c.ctx)
+	c.disableVertexAttribArray = c.ctx.Get("disableVertexAttribArray").Call("bind", c.ctx)
 	c.drawElements = c.ctx.Get("drawElements").Call("bind", c.ctx)
+	c.enableVertexAttribArray = c.ctx.Get("enableVertexAttribArray").Call("bind", c.ctx)
 	c.uniform1f = c.ctx.Get("uniform1f").Call("bind", c.ctx)
 	c.uniform1i = c.ctx.Get("uniform1i").Call("bind", c.ctx)
 	c.uniform2f = c.ctx.Get("uniform2f").Call("bind", c.ctx)
@@ -189,6 +185,8 @@ func (c *context) bind() {
 	c.uniformMatrix3fv = c.ctx.Get("uniformMatrix3fv").Call("bind", c.ctx)
 	c.uniformMatrix4fv = c.ctx.Get("uniformMatrix4fv").Call("bind", c.ctx)
 	c.useProgram = c.ctx.Get("useProgram").Call("bind", c.ctx)
+	c.vertexAttribPointer = c.ctx.Get("vertexAttribPointer").Call("bind", c.ctx)
+	c.viewport = c.ctx.Get("viewport").Call("bind", c.ctx)
 }
 
 func (c *context) ActiveTexture(texture Enum) {
@@ -244,7 +242,7 @@ func (c *context) BlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfacto
 }
 
 func (c *context) BufferData(target Enum, src []byte, usage Enum) {
-	c.ctx.Call("bufferData", target, jsBytes(src), usage)
+	c.bufferData.Invoke(target, jsBytes(src), usage)
 }
 
 func (c *context) BufferInit(target Enum, size int, usage Enum) {
@@ -380,7 +378,7 @@ func (c *context) Disable(cap Enum) {
 }
 
 func (c *context) DisableVertexAttribArray(a Attrib) {
-	c.ctx.Call("disableVertexAttribArray", a.Value)
+	c.disableVertexAttribArray.Invoke(a.Value)
 }
 
 func (c *context) DrawArrays(mode Enum, first, count int) {
@@ -396,7 +394,7 @@ func (c *context) Enable(cap Enum) {
 }
 
 func (c *context) EnableVertexAttribArray(a Attrib) {
-	c.ctx.Call("enableVertexAttribArray", a.Value)
+	c.enableVertexAttribArray.Invoke(a.Value)
 }
 
 func (c *context) Finish() {
@@ -833,9 +831,9 @@ func (c *context) VertexAttrib4fv(dst Attrib, src []float32) {
 }
 
 func (c *context) VertexAttribPointer(dst Attrib, size int, ty Enum, normalized bool, stride, offset int) {
-	c.ctx.Call("vertexAttribPointer", dst.Value, size, ty, normalized, stride, offset)
+	c.vertexAttribPointer.Invoke(dst.Value, size, ty, normalized, stride, offset)
 }
 
 func (c *context) Viewport(x, y, width, height int) {
-	c.ctx.Call("viewport", x, y, width, height)
+	c.viewport.Invoke(x, y, width, height)
 }
