@@ -18,10 +18,7 @@ func NewContext() (Context, Worker) {
 	canvas.Set("width", js.Global().Get("innerWidth"))
 	canvas.Set("height", js.Global().Get("innerHeight"))
 
-	gl2 := canvas.Call("getContext", "webgl2", map[string]interface{}{
-		"alpha":     false,
-		"antialias": true,
-	})
+	gl2 := canvas.Call("getContext", "webgl2")
 	if gl2.Truthy() {
 		ctx := &context3{context: context{canvas: canvas, ctx: gl2}}
 
@@ -30,10 +27,7 @@ func NewContext() (Context, Worker) {
 		return ctx, noopWorker{}
 	}
 
-	gl := canvas.Call("getContext", "webgl", map[string]interface{}{
-		"alpha":     false,
-		"antialias": true,
-	})
+	gl := canvas.Call("getContext", "webgl")
 	if gl.Truthy() {
 		ctx := &context{canvas: canvas, ctx: gl}
 
