@@ -10,6 +10,7 @@ import "syscall/js"
 
 type CanvasContext interface {
 	Canvas() js.Value
+	CanvasContext() js.Value
 }
 
 func NewContext() (Context, Worker) {
@@ -152,6 +153,10 @@ var _ CanvasContext = (*context3)(nil)
 
 func (c *context) Canvas() js.Value {
 	return c.canvas
+}
+
+func (c *context) CanvasContext() js.Value {
+	return c.ctx
 }
 
 type context3 struct {
