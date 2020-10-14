@@ -127,8 +127,10 @@ type context struct {
 	bufferData               js.Value
 	clear                    js.Value
 	clearColor               js.Value
+	disable                  js.Value
 	disableVertexAttribArray js.Value
 	drawElements             js.Value
+	enable                   js.Value
 	enableVertexAttribArray  js.Value
 	uniform1f                js.Value
 	uniform1i                js.Value
@@ -175,8 +177,10 @@ func (c *context) bind() {
 	c.bufferData = c.ctx.Get("bufferData").Call("bind", c.ctx)
 	c.clear = c.ctx.Get("clear").Call("bind", c.ctx)
 	c.clearColor = c.ctx.Get("clearColor").Call("bind", c.ctx)
+	c.disable = c.ctx.Get("disable").Call("bind", c.ctx)
 	c.disableVertexAttribArray = c.ctx.Get("disableVertexAttribArray").Call("bind", c.ctx)
 	c.drawElements = c.ctx.Get("drawElements").Call("bind", c.ctx)
+	c.enable = c.ctx.Get("enable").Call("bind", c.ctx)
 	c.enableVertexAttribArray = c.ctx.Get("enableVertexAttribArray").Call("bind", c.ctx)
 	c.uniform1f = c.ctx.Get("uniform1f").Call("bind", c.ctx)
 	c.uniform1i = c.ctx.Get("uniform1i").Call("bind", c.ctx)
@@ -379,7 +383,7 @@ func (c *context) DetachShader(p Program, s Shader) {
 }
 
 func (c *context) Disable(cap Enum) {
-	c.ctx.Call("disable", cap)
+	c.disable.Invoke(int(cap))
 }
 
 func (c *context) DisableVertexAttribArray(a Attrib) {
@@ -395,7 +399,7 @@ func (c *context) DrawElements(mode Enum, count int, ty Enum, offset int) {
 }
 
 func (c *context) Enable(cap Enum) {
-	c.ctx.Call("enable", cap)
+	c.enable.Invoke(int(cap))
 }
 
 func (c *context) EnableVertexAttribArray(a Attrib) {
