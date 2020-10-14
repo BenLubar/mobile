@@ -127,6 +127,7 @@ type context struct {
 	bufferData               js.Value
 	clear                    js.Value
 	clearColor               js.Value
+	cullFace                 js.Value
 	disable                  js.Value
 	disableVertexAttribArray js.Value
 	drawElements             js.Value
@@ -177,6 +178,7 @@ func (c *context) bind() {
 	c.bufferData = c.ctx.Get("bufferData").Call("bind", c.ctx)
 	c.clear = c.ctx.Get("clear").Call("bind", c.ctx)
 	c.clearColor = c.ctx.Get("clearColor").Call("bind", c.ctx)
+	c.cullFace = c.ctx.Get("cullFace").Call("bind", c.ctx)
 	c.disable = c.ctx.Get("disable").Call("bind", c.ctx)
 	c.disableVertexAttribArray = c.ctx.Get("disableVertexAttribArray").Call("bind", c.ctx)
 	c.drawElements = c.ctx.Get("drawElements").Call("bind", c.ctx)
@@ -335,7 +337,7 @@ func (c *context) CreateVertexArray() VertexArray {
 }
 
 func (c *context) CullFace(mode Enum) {
-	c.ctx.Call("cullFace", mode)
+	c.cullFace.Invoke(int(mode))
 }
 
 func (c *context) DeleteBuffer(v Buffer) {
